@@ -63,6 +63,12 @@
             width: 80px;
             margin-left: 10px;
         }
+        .meal-group {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+        }
         #total-result {
             margin-top: 30px;
             padding: 20px;
@@ -154,24 +160,61 @@
 
     <div class="section">
         <h2>野外炊飯（2025年4月1日より適用）</h2>
-        <div class="form-group">
-            <label for="mealType">メニュー:</label>
-            <select id="mealType">
-                <option value="none">なし</option>
-                <option value="curryRice">カレーライス（お米持参 550円/人）</option>
-                <option value="curryRiceNoRice">カレーライス（お米なし 750円/人）</option>
-                <option value="stew">クリームシチュー（お米持参 550円/人）</option>
-                <option value="stewNoRice">クリームシチュー（お米なし 750円/人）</option>
-                <option value="roastChicken">ローストチキン（お米別 200円/人）</option>
-                <option value="roastChicken4">ローストチキン（4人前 1,700円/4人前）</option>
-                <option value="vegetableStew">ベーコンと野菜の重ね煮（お米別 200円/人）</option>
-                <option value="vegetableStew4">ベーコンと野菜の重ね煮（4人前 2,400円/4人前）</option>
-                <option value="hotdog">カートンホットドッグ（450円/人）</option>
-            </select>
+        <div class="meal-group">
+            <h3>1回目</h3>
+            <div class="form-group">
+                <label for="mealType1">メニュー:</label>
+                <select id="mealType1">
+                    <option value="none">なし</option>
+                    <option value="curryRice">カレーライス（お米持参 550円/人）</option>
+                    <option value="curryRiceNoRice">カレーライス（お米なし 750円/人）</option>
+                    <option value="stew">クリームシチュー（お米持参 550円/人）</option>
+                    <option value="stewNoRice">クリームシチュー（お米なし 750円/人）</option>
+                    <option value="roastChicken">ローストチキン（お米別 200円/人）</option>
+                    <option value="roastChicken4">ローストチキン（4人前 1,700円/4人前）</option>
+                    <option value="vegetableStew">ベーコンと野菜の重ね煮（お米別 200円/人）</option>
+                    <option value="vegetableStew4">ベーコンと野菜の重ね煮（4人前 2,400円/4人前）</option>
+                    <option value="hotdog">カートンホットドッグ（450円/人）</option>
+                </select>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="mealCount">回数:</label>
-            <input type="number" id="mealCount" value="0" min="0">
+
+        <div class="meal-group">
+            <h3>2回目</h3>
+            <div class="form-group">
+                <label for="mealType2">メニュー:</label>
+                <select id="mealType2">
+                    <option value="none">なし</option>
+                    <option value="curryRice">カレーライス（お米持参 550円/人）</option>
+                    <option value="curryRiceNoRice">カレーライス（お米なし 750円/人）</option>
+                    <option value="stew">クリームシチュー（お米持参 550円/人）</option>
+                    <option value="stewNoRice">クリームシチュー（お米なし 750円/人）</option>
+                    <option value="roastChicken">ローストチキン（お米別 200円/人）</option>
+                    <option value="roastChicken4">ローストチキン（4人前 1,700円/4人前）</option>
+                    <option value="vegetableStew">ベーコンと野菜の重ね煮（お米別 200円/人）</option>
+                    <option value="vegetableStew4">ベーコンと野菜の重ね煮（4人前 2,400円/4人前）</option>
+                    <option value="hotdog">カートンホットドッグ（450円/人）</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="meal-group">
+            <h3>3回目</h3>
+            <div class="form-group">
+                <label for="mealType3">メニュー:</label>
+                <select id="mealType3">
+                    <option value="none">なし</option>
+                    <option value="curryRice">カレーライス（お米持参 550円/人）</option>
+                    <option value="curryRiceNoRice">カレーライス（お米なし 750円/人）</option>
+                    <option value="stew">クリームシチュー（お米持参 550円/人）</option>
+                    <option value="stewNoRice">クリームシチュー（お米なし 750円/人）</option>
+                    <option value="roastChicken">ローストチキン（お米別 200円/人）</option>
+                    <option value="roastChicken4">ローストチキン（4人前 1,700円/4人前）</option>
+                    <option value="vegetableStew">ベーコンと野菜の重ね煮（お米別 200円/人）</option>
+                    <option value="vegetableStew4">ベーコンと野菜の重ね煮（4人前 2,400円/4人前）</option>
+                    <option value="hotdog">カートンホットドッグ（450円/人）</option>
+                </select>
+            </div>
         </div>
     </div>
 
@@ -221,35 +264,41 @@
             }
 
             // 野外炊飯料金
-            const mealType = document.getElementById('mealType').value;
-            const mealCount = parseInt(document.getElementById('mealCount').value) || 0;
-            if (mealType !== 'none') {
-                let mealCost = 0;
-                switch(mealType) {
-                    case 'curryRice':
-                    case 'stew':
-                        mealCost = totalParticipants * 550;
-                        break;
-                    case 'curryRiceNoRice':
-                    case 'stewNoRice':
-                        mealCost = totalParticipants * 750;
-                        break;
-                    case 'roastChicken':
-                    case 'vegetableStew':
-                        mealCost = totalParticipants * 200;
-                        break;
-                    case 'roastChicken4':
-                        mealCost = Math.ceil(totalParticipants / 4) * 1700;
-                        break;
-                    case 'vegetableStew4':
-                        mealCost = Math.ceil(totalParticipants / 4) * 2400;
-                        break;
-                    case 'hotdog':
-                        mealCost = totalParticipants * 450;
-                        break;
+            const mealTypes = [
+                document.getElementById('mealType1').value,
+                document.getElementById('mealType2').value,
+                document.getElementById('mealType3').value
+            ];
+
+            mealTypes.forEach(mealType => {
+                if (mealType !== 'none') {
+                    let mealCost = 0;
+                    switch(mealType) {
+                        case 'curryRice':
+                        case 'stew':
+                            mealCost = totalParticipants * 550;
+                            break;
+                        case 'curryRiceNoRice':
+                        case 'stewNoRice':
+                            mealCost = totalParticipants * 750;
+                            break;
+                        case 'roastChicken':
+                        case 'vegetableStew':
+                            mealCost = totalParticipants * 200;
+                            break;
+                        case 'roastChicken4':
+                            mealCost = Math.ceil(totalParticipants / 4) * 1700;
+                            break;
+                        case 'vegetableStew4':
+                            mealCost = Math.ceil(totalParticipants / 4) * 2400;
+                            break;
+                        case 'hotdog':
+                            mealCost = totalParticipants * 450;
+                            break;
+                    }
+                    total += mealCost;
                 }
-                total += mealCost * mealCount;
-            }
+            });
             
             document.getElementById('total-amount').textContent = total.toLocaleString() + '円';
             
@@ -266,7 +315,7 @@
             input.addEventListener('input', calculateTotal);
         });
         
-        calculateTotal(); // 初期表示時の計算
+        calculateTotal();
     });
 </script>
 
