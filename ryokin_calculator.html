@@ -123,6 +123,8 @@
         <div class="form-group option-group">
             <input type="checkbox" id="addShintai">
             <label for="addShintai">薪代（50円/人）</label>
+            <label for="shintaiCount">回数:</label>
+            <input type="number" id="shintaiCount" value="0" min="0">
         </div>
         <div class="form-group option-group">
             <input type="checkbox" id="addSheets">
@@ -167,6 +169,10 @@
                 <option value="hotdog">カートンホットドッグ（450円/人）</option>
             </select>
         </div>
+        <div class="form-group">
+            <label for="mealCount">回数:</label>
+            <input type="number" id="mealCount" value="0" min="0">
+        </div>
     </div>
 
     <hr>
@@ -199,7 +205,8 @@
 
             // オプション料金
             if (document.getElementById('addShintai').checked) {
-                total += totalParticipants * 50;
+                const shintaiCount = parseInt(document.getElementById('shintaiCount').value) || 0;
+                total += (totalParticipants * 50) * shintaiCount;
             }
             if (document.getElementById('addSheets').checked) {
                 total += totalParticipants * 280;
@@ -215,33 +222,37 @@
 
             // 野外炊飯料金
             const mealType = document.getElementById('mealType').value;
-            switch(mealType) {
-                case 'curryRice':
-                case 'stew':
-                    total += totalParticipants * 550;
-                    break;
-                case 'curryRiceNoRice':
-                case 'stewNoRice':
-                    total += totalParticipants * 750;
-                    break;
-                case 'roastChicken':
-                case 'vegetableStew':
-                    total += totalParticipants * 200;
-                    break;
-                case 'roastChicken4':
-                    total += Math.ceil(totalParticipants / 4) * 1700;
-                    break;
-                case 'vegetableStew4':
-                    total += Math.ceil(totalParticipants / 4) * 2400;
-                    break;
-                case 'hotdog':
-                    total += totalParticipants * 450;
-                    break;
+            const mealCount = parseInt(document.getElementById('mealCount').value) || 0;
+            if (mealType !== 'none') {
+                let mealCost = 0;
+                switch(mealType) {
+                    case 'curryRice':
+                    case 'stew':
+                        mealCost = totalParticipants * 550;
+                        break;
+                    case 'curryRiceNoRice':
+                    case 'stewNoRice':
+                        mealCost = totalParticipants * 750;
+                        break;
+                    case 'roastChicken':
+                    case 'vegetableStew':
+                        mealCost = totalParticipants * 200;
+                        break;
+                    case 'roastChicken4':
+                        mealCost = Math.ceil(totalParticipants / 4) * 1700;
+                        break;
+                    case 'vegetableStew4':
+                        mealCost = Math.ceil(totalParticipants / 4) * 2400;
+                        break;
+                    case 'hotdog':
+                        mealCost = totalParticipants * 450;
+                        break;
+                }
+                total += mealCost * mealCount;
             }
-
+            
             document.getElementById('total-amount').textContent = total.toLocaleString() + '円';
             
-            // 一人当たりの金額を計算して表示
             let perPersonAmount = 0;
             if (totalParticipants > 0) {
                 perPersonAmount = Math.ceil(total / totalParticipants);
