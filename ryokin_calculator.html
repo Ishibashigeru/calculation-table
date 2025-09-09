@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -81,6 +81,11 @@
             color: #28a745;
             margin: 10px 0;
         }
+        #per-person-amount {
+            font-size: 1.5em;
+            color: #555;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -115,7 +120,6 @@
 
     <div class="section">
         <h2>オプション</h2>
-
         <div class="form-group option-group">
             <input type="checkbox" id="addShintai">
             <label for="addShintai">薪代（50円/人）</label>
@@ -170,6 +174,7 @@
     <div id="total-result">
         <h2>合計金額</h2>
         <div id="total-amount">0円</div>
+        <div id="per-person-amount">一人当たり: 0円</div>
         <p>※料金は概算です。詳細は施設にご確認ください。</p>
     </div>
 
@@ -235,6 +240,13 @@
             }
 
             document.getElementById('total-amount').textContent = total.toLocaleString() + '円';
+            
+            // 一人当たりの金額を計算して表示
+            let perPersonAmount = 0;
+            if (totalParticipants > 0) {
+                perPersonAmount = Math.ceil(total / totalParticipants);
+            }
+            document.getElementById('per-person-amount').textContent = `一人当たり: ${perPersonAmount.toLocaleString()}円`;
         };
 
         const inputs = document.querySelectorAll('input, select');
