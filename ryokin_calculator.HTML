@@ -1,0 +1,251 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合宿料金計算ツール</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #0056b3;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .section {
+            border-left: 5px solid #007bff;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .section h2 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="number"], select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .option-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .option-group input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .option-group label {
+            margin: 0;
+        }
+        .option-group input[type="number"] {
+            width: 80px;
+            margin-left: 10px;
+        }
+        #total-result {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e9f5ff;
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            text-align: center;
+        }
+        #total-result h2 {
+            margin: 0;
+            color: #0056b3;
+        }
+        #total-amount {
+            font-size: 3em;
+            font-weight: bold;
+            color: #28a745;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>合宿料金計算ツール</h1>
+
+    <div class="section">
+        <h2>参加人数と宿泊日数</h2>
+        <div class="form-group">
+            <label for="numAdults">学生・一般（人数）:</label>
+            <input type="number" id="numAdults" value="0" min="0">
+        </div>
+        <div class="form-group">
+            <label for="numChildren">児童・生徒（人数）:</label>
+            <input type="number" id="numChildren" value="0" min="0">
+        </div>
+        <div class="form-group">
+            <label for="numNights">宿泊日数:</label>
+            <input type="number" id="numNights" value="0" min="0">
+        </div>
+        <div class="form-group">
+            <label for="lodgingType">宿泊方法:</label>
+            <select id="lodgingType">
+                <option value="room">宿泊室</option>
+                <option value="tent">テント泊</option>
+            </select>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="section">
+        <h2>オプション</h2>
+
+        <div class="form-group option-group">
+            <input type="checkbox" id="addShintai">
+            <label for="addShintai">薪代（50円/人）</label>
+        </div>
+        <div class="form-group option-group">
+            <input type="checkbox" id="addSheets">
+            <label for="addSheets">シーツ代（280円/人）</label>
+        </div>
+        <div class="form-group">
+            <label>研修室（2F・3F）利用:</label>
+            <div class="option-group">
+                <input type="checkbox" id="addKenshushitsu">
+                <label for="addKenshushitsu">利用する</label>
+                <label for="kenshuHours">利用時間（時間）:</label>
+                <input type="number" id="kenshuHours" value="0" min="0">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>講堂・体育館利用:</label>
+            <div class="option-group">
+                <input type="checkbox" id="addKodo">
+                <label for="addKodo">利用する</label>
+                <label for="kodoHours">利用時間（時間）:</label>
+                <input type="number" id="kodoHours" value="0" min="0">
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="section">
+        <h2>野外炊飯（2025年4月1日より適用）</h2>
+        <div class="form-group">
+            <label for="mealType">メニュー:</label>
+            <select id="mealType">
+                <option value="none">なし</option>
+                <option value="curryRice">カレーライス（お米持参 550円/人）</option>
+                <option value="curryRiceNoRice">カレーライス（お米なし 750円/人）</option>
+                <option value="stew">クリームシチュー（お米持参 550円/人）</option>
+                <option value="stewNoRice">クリームシチュー（お米なし 750円/人）</option>
+                <option value="roastChicken">ローストチキン（お米別 200円/人）</option>
+                <option value="roastChicken4">ローストチキン（4人前 1,700円/4人前）</option>
+                <option value="vegetableStew">ベーコンと野菜の重ね煮（お米別 200円/人）</option>
+                <option value="vegetableStew4">ベーコンと野菜の重ね煮（4人前 2,400円/4人前）</option>
+                <option value="hotdog">カートンホットドッグ（450円/人）</option>
+            </select>
+        </div>
+    </div>
+
+    <hr>
+
+    <div id="total-result">
+        <h2>合計金額</h2>
+        <div id="total-amount">0円</div>
+        <p>※料金は概算です。詳細は施設にご確認ください。</p>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const calculateTotal = () => {
+            let total = 0;
+            const numAdults = parseInt(document.getElementById('numAdults').value) || 0;
+            const numChildren = parseInt(document.getElementById('numChildren').value) || 0;
+            const numNights = parseInt(document.getElementById('numNights').value) || 0;
+            const lodgingType = document.getElementById('lodgingType').value;
+            const totalParticipants = numAdults + numChildren;
+
+            // 宿泊料金
+            if (lodgingType === 'room') {
+                total += (numAdults * 630 + numChildren * 320) * numNights;
+            } else if (lodgingType === 'tent') {
+                total += (numAdults * 260 + numChildren * 150) * numNights;
+            }
+
+            // オプション料金
+            if (document.getElementById('addShintai').checked) {
+                total += totalParticipants * 50;
+            }
+            if (document.getElementById('addSheets').checked) {
+                total += totalParticipants * 280;
+            }
+            if (document.getElementById('addKenshushitsu').checked) {
+                const kenshuHours = parseInt(document.getElementById('kenshuHours').value) || 0;
+                total += (numAdults * 370 + numChildren * 150) * kenshuHours;
+            }
+            if (document.getElementById('addKodo').checked) {
+                const kodoHours = parseInt(document.getElementById('kodoHours').value) || 0;
+                total += (numAdults * 730 + numChildren * 370) * kodoHours;
+            }
+
+            // 野外炊飯料金
+            const mealType = document.getElementById('mealType').value;
+            switch(mealType) {
+                case 'curryRice':
+                case 'stew':
+                    total += totalParticipants * 550;
+                    break;
+                case 'curryRiceNoRice':
+                case 'stewNoRice':
+                    total += totalParticipants * 750;
+                    break;
+                case 'roastChicken':
+                case 'vegetableStew':
+                    total += totalParticipants * 200;
+                    break;
+                case 'roastChicken4':
+                    total += Math.ceil(totalParticipants / 4) * 1700;
+                    break;
+                case 'vegetableStew4':
+                    total += Math.ceil(totalParticipants / 4) * 2400;
+                    break;
+                case 'hotdog':
+                    total += totalParticipants * 450;
+                    break;
+            }
+
+            document.getElementById('total-amount').textContent = total.toLocaleString() + '円';
+        };
+
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('change', calculateTotal);
+            input.addEventListener('input', calculateTotal);
+        });
+        
+        calculateTotal(); // 初期表示時の計算
+    });
+</script>
+
+</body>
+</html>
