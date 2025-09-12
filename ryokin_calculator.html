@@ -197,25 +197,6 @@
                 </select>
             </div>
         </div>
-
-        <div class="meal-group">
-            <h3>3回目</h3>
-            <div class="form-group">
-                <label for="mealType3">メニュー:</label>
-                <select id="mealType3">
-                    <option value="none">なし</option>
-                    <option value="curryRice">カレーライス（お米持参 550円/人）</option>
-                    <option value="curryRiceNoRice">カレーライス（お米なし 750円/人）</option>
-                    <option value="stew">クリームシチュー（お米持参 550円/人）</option>
-                    <option value="stewNoRice">クリームシチュー（お米なし 750円/人）</option>
-                    <option value="roastChicken">ローストチキン（お米別 200円/人）</option>
-                    <option value="roastChicken4">ローストチキン（4人前 1,700円/4人前）</option>
-                    <option value="vegetableStew">ベーコンと野菜の重ね煮（お米別 200円/人）</option>
-                    <option value="vegetableStew4">ベーコンと野菜の重ね煮（4人前 2,400円/4人前）</option>
-                    <option value="hotdog">カートンホットドッグ（450円/人）</option>
-                </select>
-            </div>
-        </div>
     </div>
 
     <hr>
@@ -266,8 +247,7 @@
             // 野外炊飯料金
             const mealTypes = [
                 document.getElementById('mealType1').value,
-                document.getElementById('mealType2').value,
-                document.getElementById('mealType3').value
+                document.getElementById('mealType2').value
             ];
 
             mealTypes.forEach(mealType => {
