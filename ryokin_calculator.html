@@ -92,6 +92,25 @@
             color: #555;
             margin-top: 10px;
         }
+        .karaoke-result {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f0f8ff;
+            border: 1px solid #cceeff;
+            border-radius: 8px;
+            font-size: 1.2em;
+        }
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        #breakdown-note {
+            font-size: 0.9em;
+            text-align: center;
+            margin-top: 15px;
+            color: #555;
+        }
     </style>
 </head>
 <body>
@@ -102,23 +121,12 @@
     <div class="section">
         <h2>参加人数と宿泊日数</h2>
         <div class="form-group">
-            <label for="numAdults">学生・一般（人数）:</label>
+            <label for="numAdults">参加人数:</label>
             <input type="number" id="numAdults" value="0" min="0">
         </div>
         <div class="form-group">
-            <label for="numChildren">児童・生徒（人数）:</label>
-            <input type="number" id="numChildren" value="0" min="0">
-        </div>
-        <div class="form-group">
-            <label for="numNights">宿泊日数:</label>
+            <label for="numNights">宿泊日数（630円/泊）:</label>
             <input type="number" id="numNights" value="0" min="0">
-        </div>
-        <div class="form-group">
-            <label for="lodgingType">宿泊方法:</label>
-            <select id="lodgingType">
-                <option value="room">宿泊室</option>
-                <option value="tent">テント泊</option>
-            </select>
         </div>
     </div>
 
@@ -127,17 +135,11 @@
     <div class="section">
         <h2>オプション</h2>
         <div class="form-group option-group">
-            <input type="checkbox" id="addShintai">
-            <label for="addShintai">薪代（50円/人）</label>
-            <label for="shintaiCount">回数:</label>
-            <input type="number" id="shintaiCount" value="0" min="0">
-        </div>
-        <div class="form-group option-group">
             <input type="checkbox" id="addSheets">
             <label for="addSheets">シーツ代（280円/人）</label>
         </div>
         <div class="form-group">
-            <label>研修室（2F・3F）利用:</label>
+            <label>研修室（2F・3F）利用: <span style="font-weight: bold;">(370円/時間)</span></label>
             <div class="option-group">
                 <input type="checkbox" id="addKenshushitsu">
                 <label for="addKenshushitsu">利用する</label>
@@ -146,7 +148,7 @@
             </div>
         </div>
         <div class="form-group">
-            <label>講堂・体育館利用:</label>
+            <label>講堂・体育館利用: <span style="font-weight: bold;">(730円/時間)</span></label>
             <div class="option-group">
                 <input type="checkbox" id="addKodo">
                 <label for="addKodo">利用する</label>
@@ -161,7 +163,7 @@
     <div class="section">
         <h2>野外炊飯（2025年4月1日より適用）</h2>
         <div class="meal-group">
-            <h3>1回目</h3>
+            <h3>1日目</h3>
             <div class="form-group">
                 <label for="mealType1">メニュー:</label>
                 <select id="mealType1">
@@ -180,7 +182,7 @@
         </div>
 
         <div class="meal-group">
-            <h3>2回目</h3>
+            <h3>2日目</h3>
             <div class="form-group">
                 <label for="mealType2">メニュー:</label>
                 <select id="mealType2">
@@ -197,6 +199,40 @@
                 </select>
             </div>
         </div>
+
+        <div class="form-group" style="font-weight: bold; color: #28a745;">
+            薪代（50円/人 × 回数分）: 自動計算されます
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="section">
+        <h2>カラオケ料金（名護十字路店）</h2>
+        <div class="form-group">
+            <h3>1日目</h3>
+            <label for="karaokeDay1">曜日:</label>
+            <select id="karaokeDay1">
+                <option value="none">なし</option>
+                <option value="weekday">平日</option>
+                <option value="weekend">週末</option>
+            </select>
+            <div class="karaoke-result" id="karaoke-result1">
+                一人当たり料金: 0円
+            </div>
+        </div>
+        <div class="form-group">
+            <h3>2日目</h3>
+            <label for="karaokeDay2">曜日:</label>
+            <select id="karaokeDay2">
+                <option value="none">なし</option>
+                <option value="weekday">平日</option>
+                <option value="weekend">週末</option>
+            </select>
+            <div class="karaoke-result" id="karaoke-result2">
+                一人当たり料金: 0円
+            </div>
+        </div>
     </div>
 
     <hr>
@@ -205,7 +241,10 @@
         <h2>合計金額</h2>
         <div id="total-amount">0円</div>
         <div id="per-person-amount">一人当たり: 0円</div>
-        <p>※料金は概算です。詳細は施設にご確認ください。</p>
+        
+        <div id="breakdown">
+            </div>
+
     </div>
 
 </div>
@@ -214,72 +253,187 @@
     document.addEventListener('DOMContentLoaded', () => {
         const calculateTotal = () => {
             let total = 0;
+            let lodgingCost = 0;
+            let sheetsCost = 0;
+            let kenshushitsuCost = 0;
+            let kodoCost = 0;
+            let mealsCost = 0;
+            let shintaiCost = 0;
+            let karaokeCost = 0;
+
             const numAdults = parseInt(document.getElementById('numAdults').value) || 0;
-            const numChildren = parseInt(document.getElementById('numChildren').value) || 0;
+            const numChildren = 0;
             const numNights = parseInt(document.getElementById('numNights').value) || 0;
-            const lodgingType = document.getElementById('lodgingType').value;
+            const lodgingType = 'room';
             const totalParticipants = numAdults + numChildren;
 
             // 宿泊料金
-            if (lodgingType === 'room') {
-                total += (numAdults * 630 + numChildren * 320) * numNights;
-            } else if (lodgingType === 'tent') {
-                total += (numAdults * 260 + numChildren * 150) * numNights;
+            if (numNights > 0 && totalParticipants > 0) {
+                if (lodgingType === 'room') {
+                    lodgingCost = (numAdults * 630 + numChildren * 320) * numNights;
+                } else if (lodgingType === 'tent') {
+                    lodgingCost = (numAdults * 260 + numChildren * 150) * numNights;
+                }
             }
+            total += lodgingCost;
 
             // オプション料金
-            if (document.getElementById('addShintai').checked) {
-                const shintaiCount = parseInt(document.getElementById('shintaiCount').value) || 0;
-                total += (totalParticipants * 50) * shintaiCount;
+            if (document.getElementById('addSheets').checked && totalParticipants > 0) {
+                sheetsCost += totalParticipants * 280;
             }
-            if (document.getElementById('addSheets').checked) {
-                total += totalParticipants * 280;
-            }
-            if (document.getElementById('addKenshushitsu').checked) {
+            if (document.getElementById('addKenshushitsu').checked && totalParticipants > 0) {
                 const kenshuHours = parseInt(document.getElementById('kenshuHours').value) || 0;
-                total += (numAdults * 370 + numChildren * 150) * kenshuHours;
+                if (kenshuHours > 0) {
+                    kenshushitsuCost += (numAdults * 370 + numChildren * 150) * kenshuHours;
+                }
             }
-            if (document.getElementById('addKodo').checked) {
+            if (document.getElementById('addKodo').checked && totalParticipants > 0) {
                 const kodoHours = parseInt(document.getElementById('kodoHours').value) || 0;
-                total += (numAdults * 730 + numChildren * 370) * kodoHours;
+                if (kodoHours > 0) {
+                    kodoCost += (numAdults * 730 + numChildren * 370) * kodoHours;
+                }
             }
+            total += (sheetsCost + kenshushitsuCost + kodoCost);
 
             // 野外炊飯料金
             const mealTypes = [
                 document.getElementById('mealType1').value,
                 document.getElementById('mealType2').value
             ];
-
+            
+            let mealCount = 0;
             mealTypes.forEach(mealType => {
                 if (mealType !== 'none') {
-                    let mealCost = 0;
+                    mealCount++;
+                    let subMealCost = 0;
                     switch(mealType) {
                         case 'curryRice':
                         case 'stew':
-                            mealCost = totalParticipants * 550;
+                            subMealCost = totalParticipants * 550;
                             break;
                         case 'curryRiceNoRice':
                         case 'stewNoRice':
-                            mealCost = totalParticipants * 750;
+                            subMealCost = totalParticipants * 750;
                             break;
                         case 'roastChicken':
                         case 'vegetableStew':
-                            mealCost = totalParticipants * 200;
+                            subMealCost = totalParticipants * 200;
                             break;
                         case 'roastChicken4':
-                            mealCost = Math.ceil(totalParticipants / 4) * 1700;
+                            subMealCost = Math.ceil(totalParticipants / 4) * 1700;
                             break;
                         case 'vegetableStew4':
-                            mealCost = Math.ceil(totalParticipants / 4) * 2400;
+                            subMealCost = Math.ceil(totalParticipants / 4) * 2400;
                             break;
                         case 'hotdog':
-                            mealCost = totalParticipants * 450;
+                            subMealCost = totalParticipants * 450;
                             break;
                     }
-                    total += mealCost;
+                    mealsCost += subMealCost;
                 }
             });
             
+            // 薪代（野外炊飯の回数と連動）
+            if (mealCount > 0) {
+                shintaiCost += (totalParticipants * 50) * mealCount;
+            }
+            total += (mealsCost + shintaiCost);
+
+            // カラオケ料金
+            const karaokeDays = [
+                document.getElementById('karaokeDay1').value,
+                document.getElementById('karaokeDay2').value
+            ];
+
+            let karaokePax = totalParticipants;
+            
+            karaokeDays.forEach((day, index) => {
+                let subKaraokeCost = 0;
+                let karaokeResultId = 'karaoke-result' + (index + 1);
+
+                if (day === 'weekday') {
+                    subKaraokeCost = karaokePax * 1250;
+                    document.getElementById(karaokeResultId).textContent = `一人当たり料金: 1,250円`;
+                } else if (day === 'weekend') {
+                    subKaraokeCost = karaokePax * 1500;
+                    document.getElementById(karaokeResultId).textContent = `一人当たり料金: 1,500円`;
+                } else {
+                    document.getElementById(karaokeResultId).textContent = `一人当たり料金: 0円`;
+                }
+                karaokeCost += subKaraokeCost;
+            });
+            total += karaokeCost;
+            
+            // 内訳の表示 (動的に生成)
+            const breakdownDiv = document.getElementById('breakdown');
+            breakdownDiv.innerHTML = ''; // まず既存の内容をクリア
+
+            let breakdownContent = '';
+
+            if (lodgingCost > 0) {
+                breakdownContent += `
+                    <div class="breakdown-item">
+                        <span>宿泊費:</span>
+                        <span>${lodgingCost.toLocaleString()}円 （${Math.ceil(lodgingCost / totalParticipants).toLocaleString()}円/人）</span>
+                    </div>
+                `;
+            }
+            if (sheetsCost > 0) {
+                breakdownContent += `
+                    <div class="breakdown-item">
+                        <span>シーツ代:</span>
+                        <span>${sheetsCost.toLocaleString()}円 （${Math.ceil(sheetsCost / totalParticipants).toLocaleString()}円/人）</span>
+                    </div>
+                `;
+            }
+            if (kenshushitsuCost > 0) {
+                breakdownContent += `
+                    <div class="breakdown-item">
+                        <span>研修室料金:</span>
+                        <span>${kenshushitsuCost.toLocaleString()}円 （${Math.ceil(kenshushitsuCost / totalParticipants).toLocaleString()}円/人）</span>
+                    </div>
+                `;
+            }
+            if (kodoCost > 0) {
+                breakdownContent += `
+                    <div class="breakdown-item">
+                        <span>講堂・体育館料金:</span>
+                        <span>${kodoCost.toLocaleString()}円 （${Math.ceil(kodoCost / totalParticipants).toLocaleString()}円/人）</span>
+                    </div>
+                `;
+            }
+            if (mealsCost > 0) {
+                breakdownContent += `
+                    <div class="breakdown-item">
+                        <span>野外炊飯料金:</span>
+                        <span>${mealsCost.toLocaleString()}円 （${Math.ceil(mealsCost / totalParticipants).toLocaleString()}円/人）</span>
+                    </div>
+                `;
+            }
+            if (shintaiCost > 0) {
+                breakdownContent += `
+                    <div class="breakdown-item">
+                        <span>薪代:</span>
+                        <span>${shintaiCost.toLocaleString()}円 （${Math.ceil(shintaiCost / totalParticipants).toLocaleString()}円/人）</span>
+                    </div>
+                `;
+            }
+            if (karaokeCost > 0) {
+                breakdownContent += `
+                    <div class="breakdown-item">
+                        <span>カラオケ料金:</span>
+                        <span>${karaokeCost.toLocaleString()}円 （${Math.ceil(karaokeCost / totalParticipants).toLocaleString()}円/人）</span>
+                    </div>
+                `;
+            }
+
+            breakdownDiv.innerHTML = breakdownContent + `
+                <p id="breakdown-note">※料金は概算です。詳細は施設にご確認ください。<br>
+                （）内は一人当たりの金額です。</p>
+            `;
+
+
+            // 合計金額と一人当たりの表示
             document.getElementById('total-amount').textContent = total.toLocaleString() + '円';
             
             let perPersonAmount = 0;
